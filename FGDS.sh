@@ -24,14 +24,6 @@ proxyport=$3			## Proxy Port
 gsite="site:$domain" 		## Google Site
 folder="outputs"		## Output folder name
 
-## Request the repository
-onlinevar=`curl -s https://raw.githubusercontent.com/IvanGlinkin/Fast-Google-Dorks-Scan/master/settings.conf`
-onlineversion=`echo $onlinevar | awk -F\" '{print $2}'`		# Latest version
-onlineupdatedate=`echo $onlinevar | awk -F\" '{print $4}'`	# The date of release
-sponsorstartdate=`echo $onlinevar | awk -F\" '{print $6}'`	# Sponsor start date 
-sponsorenddate=`echo $onlinevar | awk -F\" '{print $8}'`	# Sponsor end date
-sponsordata=`echo $onlinevar | awk -F\" '{print $10}'`		# Sponsor data to be presented
-
 ## Colors
 RED=`echo -n '\e[00;31m'`;
 RED_BOLD=`echo -n '\e[01;31m'`;
@@ -1045,24 +1037,6 @@ echo -e "$ORANGE╚════════════════════�
 echo -e "";
 echo -e "$ORANGE[ ! ] https://www.linkedin.com/in/IvanGlinkin/ | https://x.com/glinkinivan$CLEAR_FONT";
 
-# Check the version
-checktheversion=$(echo "$version < $onlineversion" | bc -l)
-if [ "$checktheversion" -eq 1 ]; then
-    echo -e "$RED_BOLD[ ! ] You current FGDS version ($version) is outdated!\n[ ! ] The latest version is$CLEAR_FONT $GREEN_BOLD$onlineversion $CLEAR_FONT\n$RED_BOLD[ ! ] You can download the latest version by executing the next command:\n[ ! ]$CLEAR_FONT$GREEN_BOLD git clone https://github.com/IvanGlinkin/Fast-Google-Dorks-Scan.git $CLEAR_FONT";
-else
-    echo -e "$ORANGE[ ! ] Version: $version (latest)$CLEAR_FONT";
-fi
-echo -e "";
-
-# Sponsor data
-current_timestamp=$(date +%s)
-start_timestamp=$(date -d "$sponsorstartdate" +%s)
-end_timestamp=$(date -d "$sponsorenddate" +%s)
-
-if [ "$current_timestamp" -ge "$start_timestamp" ] && [ "$current_timestamp" -le "$end_timestamp" ]; then
-	echo -e "$BLUE[ ! ] Sponsor: $sponsordata $CLEAR_FONT";
-	echo -e "";
-fi
 
 # Check domain
 if [ -z "$domain" ] 
