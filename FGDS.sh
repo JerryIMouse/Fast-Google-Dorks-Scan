@@ -14,13 +14,9 @@
 
 # Variables
 ## General
-version="3.171"			## Version Year.Day
-updatedate="October 21, 2023"	## The date of the last update
-releasedate="May 3, 2020"	## The date of release
 example_domain="megacorp.one" 	## Example domain
 domain=$1 			## Get the domain
-proxyurl=$2			## Proxy URL
-proxyport=$3			## Proxy Port
+proxyconf=$2			## Proxy Configuration
 gsite="site:$domain" 		## Google Site
 folder="outputs"		## Output folder name
 
@@ -1042,7 +1038,7 @@ echo -e "$ORANGE[ ! ] https://www.linkedin.com/in/IvanGlinkin/ | https://x.com/g
 if [ -z "$domain" ] 
 then
 	echo -e "$ORANGE[ ! ] Usage example (simple):$CLEAR_FONT$RED_BOLD bash $0 $example_domain $CLEAR_FONT"
- 	echo -e "$ORANGE[ ! ] Usage example (proxy): $CLEAR_FONT$RED_BOLD bash $0 $example_domain 192.168.1.1 8080$CLEAR_FONT"
+ 	echo -e "$ORANGE[ ! ] Usage example (proxy): $CLEAR_FONT$RED_BOLD bash $0 $example_domain /etc/proxychains.conf $CLEAR_FONT"
 	exit
 else
 	### Check if the folder for outputs is existed. IF not, create a folder
@@ -1052,9 +1048,9 @@ else
 	
 	echo -e "$ORANGE[ ! ] Get information about:   $CLEAR_FONT $RED_BOLD$domain$CLEAR_FONT"
 	
-	if [ -n "$proxyurl" ] && [ -n "$proxyport" ]
+	if [ -n "$proxyconf" ]
 	then
-		echo -e "$ORANGE[ ! ] Proxy set to:   $CLEAR_FONT $RED_BOLD$proxyurl Port: $proxyport$CLEAR_FONT"
+		echo -e "$ORANGE[ ! ] Proxy Configuation set to:   $CLEAR_FONT $RED_BOLD $proxyconf $CLEAR_FONT"
 	fi
 	echo -e "$ORANGE[ ! ] Output file is saved:    $CLEAR_FONT $RED_BOLD$(pwd)$folder/$filename$CLEAR_FONT"
 fi
@@ -1067,11 +1063,11 @@ function Query {
 			index=$(( RANDOM % useragentlength ))
 			randomuseragent=${useragentsarray[$index]}
 
-			if [ -n "$proxyurl" ] && [ -n "$proxyport" ]
+			if [ -n "$proxyconf" ]
 				then 
-					query=$(echo; curl --proxy "$proxyurl:$proxyport" -sS -b "CONSENT=YES+srp.gws-20211028-0-RC2.es+FX+330" -A "\"$randomuseragent\"" "https://www.google.com/search?q=$gsite%20$1&start=$start&client=firefox-b-e")	
+					query=$(echo; proxychains -q -f $proxyconf curl -sS -b "CONSENT=YES+srp.gws-20211028-0-RC2.es+FX+330" -A "$randomuseragent" "https://www.google.com/search?q=$gsite%20$1&start=$start&client=firefox-b-e")	
 				else
-					query=$(echo; curl -sS -b "CONSENT=YES+srp.gws-20211028-0-RC2.es+FX+330" -A "\"$randomuseragent\"" "https://www.google.com/search?q=$gsite%20$1&start=$start&client=firefox-b-e")
+					query=$(echo; curl -sS -b "CONSENT=YES+srp.gws-20211028-0-RC2.es+FX+330" -A "$randomuseragent" "https://www.google.com/search?q=$gsite%20$1&start=$start&client=firefox-b-e")
 			fi
 
 			checkban=$(echo $query | grep -io "https://www.google.com/sorry/index")
